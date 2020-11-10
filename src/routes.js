@@ -9,7 +9,7 @@ routes.post('/posts', multer(multerConfig).single('file'), async (req,resp) => {
     const {
         originalname: name,
         size,
-        filename: key,
+        key,
 
     } = req.file;
     const post = await Post.create({
