@@ -3,7 +3,6 @@ const aws = require('aws-sdk');
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
-const { dirname } = require('path');
 
 const s3 = new aws.S3();
 
@@ -27,10 +26,18 @@ PostSchema.pre('save', function() {
 
 PostSchema.pre('remove', function() {
     if (process.env.STORAGE_TYPE == 's3') {
-        return s3.deleteObject({
-            Bucket: 'fi9-upload-test',
-            Key: this.key
-        }).promise();
+        return s3
+            .deleteObject({
+                Bucket: 'fi9-upload-test',
+                Key: this.key
+            })
+            .promise()
+            .then(response => {
+                console.log(response.status);
+            })
+            .catch(response => {
+                console.log(response.status);
+            });
     } else {
         return promisify(fs.unlink)(
             path.resolve(__dirname,"..", "..", 'temp', "uploads", this.key)
